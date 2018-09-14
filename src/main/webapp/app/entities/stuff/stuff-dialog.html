@@ -80,7 +80,7 @@
 
         <div class="form-group">
             <label data-translate="customeranalyticsApp.stuff.branch" for="field_branch">Branch</label>
-            <select class="form-control" id="field_branch" name="branch" ng-model="vm.stuff.branch" ng-options="branch as branch.id for branch in vm.branches track by branch.id">
+            <select class="form-control" id="field_branch" name="branch" ng-model="vm.stuff.branch" ng-options="branch as branch.name for branch in vm.branches track by branch.id">
                 <option value=""></option>
             </select>
         </div>

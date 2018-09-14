@@ -15,7 +15,8 @@
             "detail": {
                 "title": "Device"
             },
-            "deviceId": "Device Id"
+            "deviceId": "Device Id",
+            "branch": "Branch"
         }
     }
 }

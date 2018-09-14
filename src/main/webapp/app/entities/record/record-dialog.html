@@ -44,20 +44,14 @@
         </div>
 
         <div class="form-group">
-            <label data-translate="customeranalyticsApp.record.branch" for="field_branch">Branch</label>
-            <select class="form-control" id="field_branch" name="branch" ng-model="vm.record.branch" ng-options="branch as branch.id for branch in vm.branches track by branch.id">
-                <option value=""></option>
-            </select>
-        </div>
-        <div class="form-group">
             <label data-translate="customeranalyticsApp.record.device" for="field_device">Device</label>
-            <select class="form-control" id="field_device" name="device" ng-model="vm.record.device" ng-options="device as device.id for device in vm.devices track by device.id">
+            <select class="form-control" id="field_device" name="device" ng-model="vm.record.device" ng-options="device as device.deviceId for device in vm.devices track by device.id">
                 <option value=""></option>
             </select>
         </div>
         <div class="form-group">
             <label data-translate="customeranalyticsApp.record.stuff" for="field_stuff">Stuff</label>
-            <select class="form-control" id="field_stuff" name="stuff" ng-model="vm.record.stuff" ng-options="stuff as stuff.id for stuff in vm.stuffs track by stuff.id">
+            <select class="form-control" id="field_stuff" name="stuff" ng-model="vm.record.stuff" ng-options="stuff as stuff.name for stuff in vm.stuffs track by stuff.id">
                 <option value=""></option>
             </select>
         </div>

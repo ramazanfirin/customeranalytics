@@ -1,6 +1,13 @@
 {
     "fluentMethods": true,
-    "relationships": [],
+    "relationships": [
+        {
+            "relationshipType": "many-to-one",
+            "relationshipName": "branch",
+            "otherEntityName": "branch",
+            "otherEntityField": "id"
+        }
+    ],
     "fields": [
         {
             "fieldName": "deviceId",

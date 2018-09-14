@@ -5,14 +5,15 @@
         .module('customeranalyticsApp')
         .controller('DeviceDialogController', DeviceDialogController);
 
-    DeviceDialogController.$inject = ['$timeout', '$scope', '$stateParams', '$uibModalInstance', 'entity', 'Device'];
+    DeviceDialogController.$inject = ['$timeout', '$scope', '$stateParams', '$uibModalInstance', 'entity', 'Device', 'Branch'];
 
-    function DeviceDialogController ($timeout, $scope, $stateParams, $uibModalInstance, entity, Device) {
+    function DeviceDialogController ($timeout, $scope, $stateParams, $uibModalInstance, entity, Device, Branch) {
         var vm = this;
 
         vm.device = entity;
         vm.clear = clear;
         vm.save = save;
+        vm.branches = Branch.query();
 
         $timeout(function (){
             angular.element('.form-group:eq(1)>input').focus();

@@ -40,7 +40,7 @@
 
         <div class="form-group">
             <label data-translate="customeranalyticsApp.branch.company" for="field_company">Company</label>
-            <select class="form-control" id="field_company" name="company" ng-model="vm.branch.company" ng-options="company as company.id for company in vm.companies track by company.id">
+            <select class="form-control" id="field_company" name="company" ng-model="vm.branch.company" ng-options="company as company.name for company in vm.companies track by company.id">
                 <option value=""></option>
             </select>
         </div>

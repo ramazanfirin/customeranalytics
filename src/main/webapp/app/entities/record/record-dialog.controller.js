@@ -5,9 +5,9 @@
         .module('customeranalyticsApp')
         .controller('RecordDialogController', RecordDialogController);
 
-    RecordDialogController.$inject = ['$timeout', '$scope', '$stateParams', '$uibModalInstance', 'entity', 'Record', 'Branch', 'Device', 'Stuff'];
+    RecordDialogController.$inject = ['$timeout', '$scope', '$stateParams', '$uibModalInstance', 'entity', 'Record', 'Device', 'Stuff'];
 
-    function RecordDialogController ($timeout, $scope, $stateParams, $uibModalInstance, entity, Record, Branch, Device, Stuff) {
+    function RecordDialogController ($timeout, $scope, $stateParams, $uibModalInstance, entity, Record, Device, Stuff) {
         var vm = this;
 
         vm.record = entity;
@@ -15,7 +15,6 @@
         vm.datePickerOpenStatus = {};
         vm.openCalendar = openCalendar;
         vm.save = save;
-        vm.branches = Branch.query();
         vm.devices = Device.query();
         vm.stuffs = Stuff.query();
 

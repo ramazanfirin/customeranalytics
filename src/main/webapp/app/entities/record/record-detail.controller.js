@@ -5,9 +5,9 @@
         .module('customeranalyticsApp')
         .controller('RecordDetailController', RecordDetailController);
 
-    RecordDetailController.$inject = ['$scope', '$rootScope', '$stateParams', 'previousState', 'entity', 'Record', 'Branch', 'Device', 'Stuff'];
+    RecordDetailController.$inject = ['$scope', '$rootScope', '$stateParams', 'previousState', 'entity', 'Record', 'Device', 'Stuff'];
 
-    function RecordDetailController($scope, $rootScope, $stateParams, previousState, entity, Record, Branch, Device, Stuff) {
+    function RecordDetailController($scope, $rootScope, $stateParams, previousState, entity, Record, Device, Stuff) {
         var vm = this;
 
         vm.record = entity;

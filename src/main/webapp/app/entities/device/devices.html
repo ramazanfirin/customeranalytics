@@ -20,6 +20,7 @@
                 <tr jh-sort="vm.predicate" ascending="vm.reverse" callback="vm.transition()">
                     <th jh-sort-by="id"><span data-translate="global.field.id">ID</span> <span class="glyphicon glyphicon-sort"></span></th>
                     <th jh-sort-by="deviceId"><span data-translate="customeranalyticsApp.device.deviceId">Device Id</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="branch.id"><span data-translate="customeranalyticsApp.device.branch">Branch</span> <span class="glyphicon glyphicon-sort"></span></th>
                     <th></th>
                 </tr>
             </thead>
@@ -27,6 +28,9 @@
                 <tr ng-repeat="device in vm.devices track by device.id">
                     <td><a ui-sref="device-detail({id:device.id})">{{device.id}}</a></td>
                     <td>{{device.deviceId}}</td>
+                    <td>
+                        <a ui-sref="branch-detail({id:device.branch.id})">{{device.branch.id}}</a>
+                    </td>
                     <td class="text-right">
                         <div class="btn-group flex-btn-group-container">
                             <button type="submit"

@@ -8,12 +8,6 @@
     -->
     <changeSet id="20180914053100-2" author="jhipster">
         
-        <addForeignKeyConstraint baseColumnNames="branch_id"
-                                 baseTableName="record"
-                                 constraintName="fk_record_branch_id"
-                                 referencedColumnNames="id"
-                                 referencedTableName="branch"/>
-
         <addForeignKeyConstraint baseColumnNames="device_id"
                                  baseTableName="record"
                                  constraintName="fk_record_device_id"

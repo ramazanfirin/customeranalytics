@@ -32,10 +32,6 @@ entity Record{
 }
 
 relationship ManyToOne {
-    Record{branch} to Branch
-}
-
-relationship ManyToOne {
     Record{device} to Device
 }
 
@@ -45,6 +41,10 @@ relationship ManyToOne {
 
 entity Device{
 	deviceId String required
+}
+
+relationship ManyToOne {
+    Device{branch} to Branch
 }
 
 enum Gender {

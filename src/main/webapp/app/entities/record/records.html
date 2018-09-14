@@ -23,7 +23,6 @@
                     <th jh-sort-by="gender"><span data-translate="customeranalyticsApp.record.gender">Gender</span> <span class="glyphicon glyphicon-sort"></span></th>
                     <th jh-sort-by="insert"><span data-translate="customeranalyticsApp.record.insert">Insert</span> <span class="glyphicon glyphicon-sort"></span></th>
                     <th jh-sort-by="afid"><span data-translate="customeranalyticsApp.record.afid">Afid</span> <span class="glyphicon glyphicon-sort"></span></th>
-                    <th jh-sort-by="branch.id"><span data-translate="customeranalyticsApp.record.branch">Branch</span> <span class="glyphicon glyphicon-sort"></span></th>
                     <th jh-sort-by="device.id"><span data-translate="customeranalyticsApp.record.device">Device</span> <span class="glyphicon glyphicon-sort"></span></th>
                     <th jh-sort-by="stuff.id"><span data-translate="customeranalyticsApp.record.stuff">Stuff</span> <span class="glyphicon glyphicon-sort"></span></th>
                     <th></th>
@@ -36,9 +35,6 @@
                     <td data-translate="{{'customeranalyticsApp.Gender.' + record.gender}}">{{record.gender}}</td>
                     <td>{{record.insert | date:'medium'}}</td>
                     <td>{{record.afid}}</td>
-                    <td>
-                        <a ui-sref="branch-detail({id:record.branch.id})">{{record.branch.id}}</a>
-                    </td>
                     <td>
                         <a ui-sref="device-detail({id:record.device.id})">{{record.device.id}}</a>
                     </td>

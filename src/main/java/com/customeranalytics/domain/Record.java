@@ -40,9 +40,6 @@ public class Record implements Serializable {
     private String afid;
 
     @ManyToOne
-    private Branch branch;
-
-    @ManyToOne
     private Device device;
 
     @ManyToOne
@@ -107,19 +104,6 @@ public class Record implements Serializable {
 
     public void setAfid(String afid) {
         this.afid = afid;
-    }
-
-    public Branch getBranch() {
-        return branch;
-    }
-
-    public Record branch(Branch branch) {
-        this.branch = branch;
-        return this;
-    }
-
-    public void setBranch(Branch branch) {
-        this.branch = branch;
     }
 
     public Device getDevice() {

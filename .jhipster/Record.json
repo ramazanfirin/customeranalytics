@@ -3,12 +3,6 @@
     "relationships": [
         {
             "relationshipType": "many-to-one",
-            "relationshipName": "branch",
-            "otherEntityName": "branch",
-            "otherEntityField": "id"
-        },
-        {
-            "relationshipType": "many-to-one",
             "relationshipName": "device",
             "otherEntityName": "device",
             "otherEntityField": "id"
