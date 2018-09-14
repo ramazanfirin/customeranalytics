@@ -1,0 +1,77 @@
+<div>
+    <h2 data-translate="customeranalyticsApp.stuff.home.title">Stuffs</h2>
+    <jhi-alert></jhi-alert>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xs-4 no-padding-left">
+                <button class="btn btn-primary" ui-sref="stuff.new" >
+                    <span class="glyphicon glyphicon-plus"></span>
+                    <span  data-translate="customeranalyticsApp.stuff.home.createLabel">
+                        Create new Stuff
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <br/>
+    <div class="table-responsive">
+        <table class="jh-table table table-striped">
+            <thead>
+                <tr jh-sort="vm.predicate" ascending="vm.reverse" callback="vm.transition()">
+                    <th jh-sort-by="id"><span data-translate="global.field.id">ID</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="name"><span data-translate="customeranalyticsApp.stuff.name">Name</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="surname"><span data-translate="customeranalyticsApp.stuff.surname">Surname</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="email"><span data-translate="customeranalyticsApp.stuff.email">Email</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="phone"><span data-translate="customeranalyticsApp.stuff.phone">Phone</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="image"><span data-translate="customeranalyticsApp.stuff.image">Image</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="branch.id"><span data-translate="customeranalyticsApp.stuff.branch">Branch</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="stuff in vm.stuffs track by stuff.id">
+                    <td><a ui-sref="stuff-detail({id:stuff.id})">{{stuff.id}}</a></td>
+                    <td>{{stuff.name}}</td>
+                    <td>{{stuff.surname}}</td>
+                    <td>{{stuff.email}}</td>
+                    <td>{{stuff.phone}}</td>
+                    <td>
+                        <a ng-if="stuff.image" ng-click="vm.openFile(stuff.imageContentType, stuff.image)">
+                            <img data-ng-src="{{'data:' + stuff.imageContentType + ';base64,' + stuff.image}}" style="max-height: 30px;" alt="stuff image"/>
+                        </a>
+                        <span ng-if="stuff.image">{{stuff.imageContentType}}, {{vm.byteSize(stuff.image)}}</span>
+                    </td>
+                    <td>
+                        <a ui-sref="branch-detail({id:stuff.branch.id})">{{stuff.branch.id}}</a>
+                    </td>
+                    <td class="text-right">
+                        <div class="btn-group flex-btn-group-container">
+                            <button type="submit"
+                                    ui-sref="stuff-detail({id:stuff.id})"
+                                    class="btn btn-info btn-sm">
+                                <span class="glyphicon glyphicon-eye-open"></span>
+                                <span class="hidden-sm-down" data-translate="entity.action.view"></span>
+                            </button>
+                            <button type="submit"
+                                    ui-sref="stuff.edit({id:stuff.id})"
+                                    class="btn btn-primary btn-sm">
+                                <span class="glyphicon glyphicon-pencil"></span>
+                                <span class="hidden-sm-down" data-translate="entity.action.edit"></span>
+                            </button>
+                            <button type="submit"
+                                    ui-sref="stuff.delete({id:stuff.id})"
+                                    class="btn btn-danger btn-sm">
+                                <span class="glyphicon glyphicon-remove-circle"></span>
+                                <span class="hidden-sm-down" data-translate="entity.action.delete"></span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="text-center">
+        <jhi-item-count page="vm.page" total="vm.queryCount" items-per-page="vm.itemsPerPage"></jhi-item-count>
+        <uib-pagination class="pagination-sm" total-items="vm.totalItems" items-per-page="vm.itemsPerPage" ng-model="vm.page" ng-change="vm.transition()"></uib-pagination>
+    </div>
+</div>

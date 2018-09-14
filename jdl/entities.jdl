@@ -1,0 +1,56 @@
+entity Company{
+     name String required
+     address String
+}
+entity Branch{
+	name String required
+	address String
+	managerName String
+}
+
+relationship ManyToOne {
+    Branch{company} to Company
+} 
+
+entity Stuff{
+    name String required
+    surname String required
+    email String
+    phone Long 
+    image ImageBlob required
+}
+
+relationship ManyToOne {
+    Stuff{branch} to Branch
+}
+
+entity Record{
+	age Long
+	gender Gender
+	insert Instant
+	afid String	
+}
+
+relationship ManyToOne {
+    Record{branch} to Branch
+}
+
+relationship ManyToOne {
+    Record{device} to Device
+}
+
+relationship ManyToOne {
+    Record{stuff} to Stuff
+}
+
+entity Device{
+	deviceId String required
+}
+
+enum Gender {
+    MALE, FEMALE
+  }
+  
+  
+paginate Company,Branch,Stuff,Record,Device with pagination  
+  

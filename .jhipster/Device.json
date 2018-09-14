@@ -1,0 +1,19 @@
+{
+    "fluentMethods": true,
+    "relationships": [],
+    "fields": [
+        {
+            "fieldName": "deviceId",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "required"
+            ]
+        }
+    ],
+    "changelogDate": "20180914053101",
+    "entityTableName": "device",
+    "dto": "no",
+    "pagination": "pagination",
+    "service": "no",
+    "jpaMetamodelFiltering": false
+}

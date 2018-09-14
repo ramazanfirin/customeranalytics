@@ -1,0 +1,48 @@
+
+<div>
+    <h2><span data-translate="customeranalyticsApp.stuff.detail.title">Stuff</span> {{vm.stuff.id}}</h2>
+    <hr>
+    <jhi-alert-error></jhi-alert-error>
+    <dl class="dl-horizontal jh-entity-details">
+        <dt><span data-translate="customeranalyticsApp.stuff.name">Name</span></dt>
+        <dd>
+            <span>{{vm.stuff.name}}</span>
+        </dd>
+        <dt><span data-translate="customeranalyticsApp.stuff.surname">Surname</span></dt>
+        <dd>
+            <span>{{vm.stuff.surname}}</span>
+        </dd>
+        <dt><span data-translate="customeranalyticsApp.stuff.email">Email</span></dt>
+        <dd>
+            <span>{{vm.stuff.email}}</span>
+        </dd>
+        <dt><span data-translate="customeranalyticsApp.stuff.phone">Phone</span></dt>
+        <dd>
+            <span>{{vm.stuff.phone}}</span>
+        </dd>
+        <dt><span data-translate="customeranalyticsApp.stuff.image">Image</span></dt>
+        <dd>
+            <div ng-if="vm.stuff.image">
+                <a ng-click="vm.openFile(vm.stuff.imageContentType, vm.stuff.image)">
+                    <img data-ng-src="{{'data:' + vm.stuff.imageContentType + ';base64,' + vm.stuff.image}}" style="max-width: 100%;" alt="stuff image"/>
+                </a>
+                {{vm.stuff.imageContentType}}, {{vm.byteSize(vm.stuff.image)}}
+            </div>
+        </dd>
+        <dt><span data-translate="customeranalyticsApp.stuff.branch">Branch</span></dt>
+        <dd>
+            <a ui-sref="branch-detail({id:vm.stuff.branch.id})">{{vm.stuff.branch.id}}</a>
+        </dd>
+    </dl>
+
+    <button type="submit"
+            ui-sref="{{ vm.previousState }}"
+            class="btn btn-info">
+        <span class="glyphicon glyphicon-arrow-left"></span>&nbsp;<span data-translate="entity.action.back"> Back</span>
+    </button>
+
+    <button type="button" ui-sref="stuff-detail.edit({id:vm.stuff.id})" class="btn btn-primary">
+        <span class="glyphicon glyphicon-pencil"></span>
+        <span class="hidden-sm-down" data-translate="entity.action.edit"> Edit</span>
+    </button>
+</div>

@@ -1,0 +1,27 @@
+{
+    "customeranalyticsApp": {
+        "record" : {
+            "home": {
+                "title": "Records",
+                "createLabel": "Create a new Record",
+                "createOrEditLabel": "Create or edit a Record"
+            },
+            "created": "A new Record is created with identifier {{ param }}",
+            "updated": "A Record is updated with identifier {{ param }}",
+            "deleted": "A Record is deleted with identifier {{ param }}",
+            "delete": {
+                "question": "Are you sure you want to delete Record {{ id }}?"
+            },
+            "detail": {
+                "title": "Record"
+            },
+            "age": "Age",
+            "gender": "Gender",
+            "insert": "Insert",
+            "afid": "Afid",
+            "branch": "Branch",
+            "device": "Device",
+            "stuff": "Stuff"
+        }
+    }
+}

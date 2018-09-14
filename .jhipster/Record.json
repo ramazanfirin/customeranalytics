@@ -1,0 +1,48 @@
+{
+    "fluentMethods": true,
+    "relationships": [
+        {
+            "relationshipType": "many-to-one",
+            "relationshipName": "branch",
+            "otherEntityName": "branch",
+            "otherEntityField": "id"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "relationshipName": "device",
+            "otherEntityName": "device",
+            "otherEntityField": "id"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "relationshipName": "stuff",
+            "otherEntityName": "stuff",
+            "otherEntityField": "id"
+        }
+    ],
+    "fields": [
+        {
+            "fieldName": "age",
+            "fieldType": "Long"
+        },
+        {
+            "fieldName": "gender",
+            "fieldType": "Gender",
+            "fieldValues": "MALE,FEMALE"
+        },
+        {
+            "fieldName": "insert",
+            "fieldType": "Instant"
+        },
+        {
+            "fieldName": "afid",
+            "fieldType": "String"
+        }
+    ],
+    "changelogDate": "20180914053100",
+    "entityTableName": "record",
+    "dto": "no",
+    "pagination": "pagination",
+    "service": "no",
+    "jpaMetamodelFiltering": false
+}

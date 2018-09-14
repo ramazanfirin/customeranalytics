@@ -1,0 +1,49 @@
+{
+    "fluentMethods": true,
+    "relationships": [
+        {
+            "relationshipType": "many-to-one",
+            "relationshipName": "branch",
+            "otherEntityName": "branch",
+            "otherEntityField": "id"
+        }
+    ],
+    "fields": [
+        {
+            "fieldName": "name",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "surname",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "email",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "phone",
+            "fieldType": "Long"
+        },
+        {
+            "fieldName": "image",
+            "fieldType": "byte[]",
+            "fieldTypeBlobContent": "image",
+            "fieldValidateRules": [
+                "required"
+            ]
+        }
+    ],
+    "changelogDate": "20180914053059",
+    "entityTableName": "stuff",
+    "dto": "no",
+    "pagination": "pagination",
+    "service": "no",
+    "jpaMetamodelFiltering": false
+}

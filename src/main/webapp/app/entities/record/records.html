@@ -1,0 +1,78 @@
+<div>
+    <h2 data-translate="customeranalyticsApp.record.home.title">Records</h2>
+    <jhi-alert></jhi-alert>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xs-4 no-padding-left">
+                <button class="btn btn-primary" ui-sref="record.new" >
+                    <span class="glyphicon glyphicon-plus"></span>
+                    <span  data-translate="customeranalyticsApp.record.home.createLabel">
+                        Create new Record
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <br/>
+    <div class="table-responsive">
+        <table class="jh-table table table-striped">
+            <thead>
+                <tr jh-sort="vm.predicate" ascending="vm.reverse" callback="vm.transition()">
+                    <th jh-sort-by="id"><span data-translate="global.field.id">ID</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="age"><span data-translate="customeranalyticsApp.record.age">Age</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="gender"><span data-translate="customeranalyticsApp.record.gender">Gender</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="insert"><span data-translate="customeranalyticsApp.record.insert">Insert</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="afid"><span data-translate="customeranalyticsApp.record.afid">Afid</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="branch.id"><span data-translate="customeranalyticsApp.record.branch">Branch</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="device.id"><span data-translate="customeranalyticsApp.record.device">Device</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="stuff.id"><span data-translate="customeranalyticsApp.record.stuff">Stuff</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="record in vm.records track by record.id">
+                    <td><a ui-sref="record-detail({id:record.id})">{{record.id}}</a></td>
+                    <td>{{record.age}}</td>
+                    <td data-translate="{{'customeranalyticsApp.Gender.' + record.gender}}">{{record.gender}}</td>
+                    <td>{{record.insert | date:'medium'}}</td>
+                    <td>{{record.afid}}</td>
+                    <td>
+                        <a ui-sref="branch-detail({id:record.branch.id})">{{record.branch.id}}</a>
+                    </td>
+                    <td>
+                        <a ui-sref="device-detail({id:record.device.id})">{{record.device.id}}</a>
+                    </td>
+                    <td>
+                        <a ui-sref="stuff-detail({id:record.stuff.id})">{{record.stuff.id}}</a>
+                    </td>
+                    <td class="text-right">
+                        <div class="btn-group flex-btn-group-container">
+                            <button type="submit"
+                                    ui-sref="record-detail({id:record.id})"
+                                    class="btn btn-info btn-sm">
+                                <span class="glyphicon glyphicon-eye-open"></span>
+                                <span class="hidden-sm-down" data-translate="entity.action.view"></span>
+                            </button>
+                            <button type="submit"
+                                    ui-sref="record.edit({id:record.id})"
+                                    class="btn btn-primary btn-sm">
+                                <span class="glyphicon glyphicon-pencil"></span>
+                                <span class="hidden-sm-down" data-translate="entity.action.edit"></span>
+                            </button>
+                            <button type="submit"
+                                    ui-sref="record.delete({id:record.id})"
+                                    class="btn btn-danger btn-sm">
+                                <span class="glyphicon glyphicon-remove-circle"></span>
+                                <span class="hidden-sm-down" data-translate="entity.action.delete"></span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="text-center">
+        <jhi-item-count page="vm.page" total="vm.queryCount" items-per-page="vm.itemsPerPage"></jhi-item-count>
+        <uib-pagination class="pagination-sm" total-items="vm.totalItems" items-per-page="vm.itemsPerPage" ng-model="vm.page" ng-change="vm.transition()"></uib-pagination>
+    </div>
+</div>
