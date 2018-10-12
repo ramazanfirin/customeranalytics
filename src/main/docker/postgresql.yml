@@ -2,17 +2,17 @@ version: '2'
 services:
     customeranalytics-postgresql:
         image: postgres:9.6.5
-        volumes:
-            - ~/volumes/jhipster/customeranalytics/postgresql/:/var/lib/postgresql/data/
+        #volumes:
+         #   - ~/volumes/jhipster/customeranalytics/postgresql/:/var/lib/postgresql/data/
         environment:
             - POSTGRES_USER=customeranalytics
             - POSTGRES_PASSWORD=
         ports:
             - 5432:5432
-    pg4admin:
-        image: dpage/pgadmin4
-        environment:
-            - PGADMIN_DEFAULT_EMAIL=admin@admin.com
-            - PGADMIN_DEFAULT_PASSWORD=admin
-        ports:
-            - 9999:80
+    #pg4admin:
+      #  image: dpage/pgadmin4
+      #  environment:
+      #      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      #      - PGADMIN_DEFAULT_PASSWORD=admin
+      #  ports:
+      #      - 9999:80
