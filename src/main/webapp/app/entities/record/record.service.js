@@ -11,6 +11,7 @@
 
         return $resource(resourceUrl, {}, {
             'query': { method: 'GET', isArray: true},
+			'deleteAll': { method: 'GET', isArray: false,url:'/api/records/deleteAll'},
             'get': {
                 method: 'GET',
                 transformResponse: function (data) {

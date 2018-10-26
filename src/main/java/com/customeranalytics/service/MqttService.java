@@ -1,6 +1,6 @@
 package com.customeranalytics.service;
 
-import javax.annotation.PostConstruct;
+import java.io.IOException;
 
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
@@ -10,28 +10,38 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileCopyUtils;
 
 import com.customeranalytics.domain.Record;
 import com.customeranalytics.repository.RecordRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.innovatrics.iface.FaceHandler;
+import com.innovatrics.iface.IFace;
+import com.innovatrics.iface.enums.AgeGenderSpeedAccuracyMode;
+import com.innovatrics.iface.enums.FacedetSpeedAccuracyMode;
+import com.innovatrics.iface.enums.Parameter;
 
 @Service
 public class MqttService implements MqttCallback{
 	
 	
 	MqttClient client;
+	IFace iface= null;
+	FaceHandler faceHandler = null;
+	
 	
 	@Autowired
 	RecordRepository recordRepository;
 	
-	public MqttService() throws MqttException {
+	public MqttService() throws MqttException, IOException {
 		super();
 		init();
 	}
 
 	//@PostConstruct
-	public void init() throws MqttException {
+	public void init() throws MqttException, IOException {
 		client=new MqttClient("tcp://localhost:1883", MqttClient.generateClientId());
 		client.setCallback( this );
 		

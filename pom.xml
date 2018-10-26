@@ -395,6 +395,8 @@
     		<version>4.0.0</version>
 		</dependency>
 		
+		
+		
 		    <dependency>
   <groupId>org.eclipse.paho</groupId>
   <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
@@ -402,6 +404,19 @@
 </dependency>
 		
         <!-- jhipster-needle-maven-add-dependency -->
+    
+    <dependency>
+            <groupId>com.innovatrics.iface</groupId>
+            <artifactId>iface-connector-main</artifactId>
+            <version>3.4.0.0</version>
+        </dependency>   
+		
+		<dependency>
+            <groupId>com.innovatrics.commons</groupId>
+            <artifactId>sdk-commons-main</artifactId>
+            <version>1.1.7</version>
+        </dependency>
+    
     </dependencies>
 
     <build>

@@ -5,12 +5,13 @@
         .module('customeranalyticsApp')
         .controller('RecordController', RecordController);
 
-    RecordController.$inject = ['$state', 'Record', 'ParseLinks', 'AlertService', 'paginationConstants', 'pagingParams'];
+    RecordController.$inject = ['$state', 'Record', 'ParseLinks', 'AlertService', 'paginationConstants', 'pagingParams','$interval'];
 
-    function RecordController($state, Record, ParseLinks, AlertService, paginationConstants, pagingParams) {
+    function RecordController($state, Record, ParseLinks, AlertService, paginationConstants, pagingParams,$interval) {
 
         var vm = this;
 
+        vm.deleteAll = deleteAll;
         vm.loadPage = loadPage;
         vm.predicate = pagingParams.predicate;
         vm.reverse = pagingParams.ascending;
@@ -18,7 +19,13 @@
         vm.itemsPerPage = paginationConstants.itemsPerPage;
 
         loadAll();
+        
+        $interval(loadAll, 1000);
 
+        function deleteAll(){
+        	Record.deleteAll();
+        }
+        
         function loadAll () {
             Record.query({
                 page: pagingParams.page - 1,
@@ -44,6 +51,8 @@
             }
         }
 
+        
+        
         function loadPage(page) {
             vm.page = page;
             vm.transition();

@@ -143,4 +143,10 @@ public class RecordResource {
         //InputStream in =;
         return IOUtils.toByteArray( new FileInputStream(new File(path)));
     }
+    
+    @GetMapping("/records/deleteAll")
+    public void deleteAll() throws IOException {
+    	recordRepository.deleteAll();
+    }
+    
 }

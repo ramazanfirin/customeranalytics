@@ -1,26 +1,37 @@
 package com.customeranalytics.service;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.imageio.ImageIO;
 
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.sockjs.client.Transport;
 import org.springframework.web.socket.sockjs.client.WebSocketTransport;
 
 import com.customeranalytics.domain.Record;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.customeranalytics.domain.enumeration.Gender;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import Luxand.FSDK;
+import com.innovatrics.iface.Face;
+import com.innovatrics.iface.FaceHandler;
+import com.innovatrics.iface.IFace;
+import com.innovatrics.iface.enums.AgeGenderSpeedAccuracyMode;
+import com.innovatrics.iface.enums.FaceAttributeId;
+import com.innovatrics.iface.enums.FacedetSpeedAccuracyMode;
+import com.innovatrics.iface.enums.Parameter;
 
 @Service
 public class FaceRecognitionService {
@@ -28,28 +39,42 @@ public class FaceRecognitionService {
 	@Autowired private SimpMessageSendingOperations simpMessagingTemplate;
 	@Autowired private MqttService mqttService;
 	
+	IFace iface= null;
+	FaceHandler faceHandler = null;
+	
+	 public int minEyeDistance = 30;
+	    public int maxEyeDistance = 200;
 	
 	//private final SimpMessageSendingOperations messagingTemplate;
 
 	@PostConstruct
-	public void init() {
+	public void init() throws IOException {
 		
-//		StompSession stompSession =  prepareSocketConnectionsForTyping(URL,userJWTController,"user", "user",SUBSCRIBE_TYPING_MESSAGE_ENDPOINT,completableFuture);
-
+//		try {
+//            int r = FSDK.ActivateLibrary("FgsONyEWyINCBz0lbgccL7LMjLMsgAbHxwgdNLt0Q1j8UTmTgZyeaeCoXno1HBydmshM4ygfBO+6/qlKhFZAF5BvVaSKx7NaV0fIFPtkRie2h1DMmKIYa15N7qBP/DsclEoom67W6fXIyRo4yBPhemiu53rXVsqfvmMOuiu7KhQ=");
+//            if (r != FSDK.FSDKE_OK){
+//                 System.err.println("sdk initiaize error");
+//                 return;
+//            }
+//		}catch(java.lang.UnsatisfiedLinkError e) {
+//            e.printStackTrace();
+//			System.exit(1);
+//		} 
+//		
+//		 FSDK.Initialize();
+		
+		iface = IFace.getInstance();
+		ClassPathResource cpr = new ClassPathResource("iengine.lic");
+		byte[] bdata = FileCopyUtils.copyToByteArray(cpr.getInputStream());
+		iface.initWithLicence(bdata);
+		
+		faceHandler = new FaceHandler();
+		faceHandler.setParam(Parameter.FACEDET_SPEED_ACCURACY_MODE, FacedetSpeedAccuracyMode.FAST.toString());
+		faceHandler.setParam(Parameter.AGEGENDER_SPEED_ACCURACY_MODE, AgeGenderSpeedAccuracyMode.FAST.toString());
+	
 		
 		
-		try {
-            int r = FSDK.ActivateLibrary("FgsONyEWyINCBz0lbgccL7LMjLMsgAbHxwgdNLt0Q1j8UTmTgZyeaeCoXno1HBydmshM4ygfBO+6/qlKhFZAF5BvVaSKx7NaV0fIFPtkRie2h1DMmKIYa15N7qBP/DsclEoom67W6fXIyRo4yBPhemiu53rXVsqfvmMOuiu7KhQ=");
-            if (r != FSDK.FSDKE_OK){
-                 System.err.println("sdk initiaize error");
-                 return;
-            }
-		}catch(java.lang.UnsatisfiedLinkError e) {
-            e.printStackTrace();
-			System.exit(1);
-		} 
 		
-		 FSDK.Initialize();
 	}
 	
 //	 public static StompSession prepareSocketConnectionsForTyping(String URL,UserJWTController userJWTController,String username,String password,String subscribeEndpoint) throws InterruptedException {
@@ -76,22 +101,46 @@ public class FaceRecognitionService {
 	        return transports;
 	    }
 	 
-	
+	 private byte[] convertToByteArray(BufferedImage originalImage) throws IOException{
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ImageIO.write( originalImage, "jpg", baos );
+			baos.flush();
+			byte[] imageInByte = baos.toByteArray();
+			baos.close();
+			return imageInByte;
+		}
 	
 	//@Async
-	public void analize(String path) throws MqttPersistenceException, MqttException, JsonProcessingException {
+	public void analize(String path) throws MqttPersistenceException, MqttException, IOException {
 		 System.out.println("istek geldi");
 		 Long start = System.currentTimeMillis();
 		 
-		 //simpMessagingTemplate.convertAndSend("/user/admin/exchange/amq.direct/chat.message", path);
-		 MqttMessage mqttMessage = new MqttMessage();
+		BufferedImage image = ImageIO.read(new File(path));
+
+		 Face[] faces = faceHandler.detectFaces(convertToByteArray(image), minEyeDistance, maxEyeDistance, 3);
+			if(faces.length==0){
+				System.out.println("No Face Detected");
+				return;
+			}
+			
+		Face face = faces[0];
+		Float age = face.getAttribute(FaceAttributeId.AGE);
+	    Float genderValue = face.getAttribute(FaceAttributeId.GENDER);
+	    ;
 		
+	    Gender gender=null ;
+	     if(genderValue<0)
+	    	 gender = Gender.MALE;
+	     else
+	    	 gender = Gender.FEMALE;
+	        
+		 MqttMessage mqttMessage = new MqttMessage();
 		 
 		 Record record = new Record();
-		 record.setAfid(null);
-		 record.setAge(null);
+		 //record.setAfid(new String(face.createTemplate()));
+		 record.setAge(age.longValue());
 		 record.setDevice(null);
-		 record.setGender(null);
+		 record.setGender(gender);
 		 record.setStuff(null);
 		 record.setPath(path);
 		 
