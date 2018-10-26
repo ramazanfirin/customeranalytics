@@ -130,6 +130,7 @@
                                 gender: null,
                                 insert: null,
                                 afid: null,
+                                path: null,
                                 id: null
                             };
                         }

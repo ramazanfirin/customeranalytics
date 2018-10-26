@@ -29,6 +29,7 @@ entity Record{
 	gender Gender
 	insert Instant
 	afid String	
+	path String
 }
 
 relationship ManyToOne {

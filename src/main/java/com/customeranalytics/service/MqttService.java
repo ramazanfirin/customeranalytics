@@ -12,13 +12,18 @@ import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.customeranalytics.domain.Record;
+import com.customeranalytics.repository.RecordRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 @Service
 public class MqttService implements MqttCallback{
 	
 	
 	MqttClient client;
 	
-	
+	@Autowired
+	RecordRepository recordRepository;
 	
 	public MqttService() throws MqttException {
 		super();
@@ -53,6 +58,9 @@ public class MqttService implements MqttCallback{
 	@Override
 	public void messageArrived(String topic, MqttMessage message) throws Exception {
 		 System.out.println("Message received:"+ new String(message.getPayload()) );
+		 ObjectMapper objectMapper = new ObjectMapper();
+		 Record record = objectMapper.readValue(new String(message.getPayload()), Record.class);
+		 recordRepository.save(record);
 	}
 
 	@Override

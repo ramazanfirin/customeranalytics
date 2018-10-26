@@ -68,7 +68,7 @@ class RecordGatlingTest extends Simulation {
             .exec(http("Create new record")
             .post("/api/records")
             .headers(headers_http_authenticated)
-            .body(StringBody("""{"id":null, "age":null, "gender":null, "insert":"2020-01-01T00:00:00.000Z", "afid":"SAMPLE_TEXT"}""")).asJSON
+            .body(StringBody("""{"id":null, "age":null, "gender":null, "insert":"2020-01-01T00:00:00.000Z", "afid":"SAMPLE_TEXT", "path":"SAMPLE_TEXT"}""")).asJSON
             .check(status.is(201))
             .check(headerRegex("Location", "(.*)").saveAs("new_record_url"))).exitHereIfFailed
             .pause(10)

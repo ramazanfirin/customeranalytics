@@ -53,6 +53,9 @@ public class RecordResourceIntTest {
     private static final String DEFAULT_AFID = "AAAAAAAAAA";
     private static final String UPDATED_AFID = "BBBBBBBBBB";
 
+    private static final String DEFAULT_PATH = "AAAAAAAAAA";
+    private static final String UPDATED_PATH = "BBBBBBBBBB";
+
     @Autowired
     private RecordRepository recordRepository;
 
@@ -94,7 +97,8 @@ public class RecordResourceIntTest {
             .age(DEFAULT_AGE)
             .gender(DEFAULT_GENDER)
             .insert(DEFAULT_INSERT)
-            .afid(DEFAULT_AFID);
+            .afid(DEFAULT_AFID)
+            .path(DEFAULT_PATH);
         return record;
     }
 
@@ -122,6 +126,7 @@ public class RecordResourceIntTest {
         assertThat(testRecord.getGender()).isEqualTo(DEFAULT_GENDER);
         assertThat(testRecord.getInsert()).isEqualTo(DEFAULT_INSERT);
         assertThat(testRecord.getAfid()).isEqualTo(DEFAULT_AFID);
+        assertThat(testRecord.getPath()).isEqualTo(DEFAULT_PATH);
     }
 
     @Test
@@ -157,7 +162,8 @@ public class RecordResourceIntTest {
             .andExpect(jsonPath("$.[*].age").value(hasItem(DEFAULT_AGE.intValue())))
             .andExpect(jsonPath("$.[*].gender").value(hasItem(DEFAULT_GENDER.toString())))
             .andExpect(jsonPath("$.[*].insert").value(hasItem(DEFAULT_INSERT.toString())))
-            .andExpect(jsonPath("$.[*].afid").value(hasItem(DEFAULT_AFID.toString())));
+            .andExpect(jsonPath("$.[*].afid").value(hasItem(DEFAULT_AFID.toString())))
+            .andExpect(jsonPath("$.[*].path").value(hasItem(DEFAULT_PATH.toString())));
     }
 
     @Test
@@ -174,7 +180,8 @@ public class RecordResourceIntTest {
             .andExpect(jsonPath("$.age").value(DEFAULT_AGE.intValue()))
             .andExpect(jsonPath("$.gender").value(DEFAULT_GENDER.toString()))
             .andExpect(jsonPath("$.insert").value(DEFAULT_INSERT.toString()))
-            .andExpect(jsonPath("$.afid").value(DEFAULT_AFID.toString()));
+            .andExpect(jsonPath("$.afid").value(DEFAULT_AFID.toString()))
+            .andExpect(jsonPath("$.path").value(DEFAULT_PATH.toString()));
     }
 
     @Test
@@ -200,7 +207,8 @@ public class RecordResourceIntTest {
             .age(UPDATED_AGE)
             .gender(UPDATED_GENDER)
             .insert(UPDATED_INSERT)
-            .afid(UPDATED_AFID);
+            .afid(UPDATED_AFID)
+            .path(UPDATED_PATH);
 
         restRecordMockMvc.perform(put("/api/records")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
@@ -215,6 +223,7 @@ public class RecordResourceIntTest {
         assertThat(testRecord.getGender()).isEqualTo(UPDATED_GENDER);
         assertThat(testRecord.getInsert()).isEqualTo(UPDATED_INSERT);
         assertThat(testRecord.getAfid()).isEqualTo(UPDATED_AFID);
+        assertThat(testRecord.getPath()).isEqualTo(UPDATED_PATH);
     }
 
     @Test

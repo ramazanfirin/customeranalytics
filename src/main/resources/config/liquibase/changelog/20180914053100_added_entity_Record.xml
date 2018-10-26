@@ -50,5 +50,16 @@
         <dropDefaultValue tableName="record" columnName="jhi_insert" columnDataType="datetime"/>
         
     </changeSet>
+    
+    <changeSet id="20181026053100-1" author="jhipster">
+          
+           <addColumn tableName="record">
+				<column name="path" type="varchar(255)">
+                	<constraints nullable="true" />
+            	</column>
+    		</addColumn>
+          
+           
+    </changeSet>        
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here, do not remove-->
 </databaseChangeLog>

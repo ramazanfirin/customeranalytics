@@ -19,6 +19,7 @@
             "gender": "Gender",
             "insert": "Insert",
             "afid": "Afid",
+            "path": "Path",
             "device": "Device",
             "stuff": "Stuff"
         }

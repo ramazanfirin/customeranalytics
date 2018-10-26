@@ -31,6 +31,10 @@
         {
             "fieldName": "afid",
             "fieldType": "String"
+        },
+        {
+            "fieldName": "path",
+            "fieldType": "String"
         }
     ],
     "changelogDate": "20180914053100",

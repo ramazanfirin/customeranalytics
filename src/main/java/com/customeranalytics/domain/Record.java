@@ -39,6 +39,9 @@ public class Record implements Serializable {
     @Column(name = "afid")
     private String afid;
 
+    @Column(name = "path")
+    private String path;
+
     @ManyToOne
     private Device device;
 
@@ -106,6 +109,19 @@ public class Record implements Serializable {
         this.afid = afid;
     }
 
+    public String getPath() {
+        return path;
+    }
+
+    public Record path(String path) {
+        this.path = path;
+        return this;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
     public Device getDevice() {
         return device;
     }
@@ -161,6 +177,7 @@ public class Record implements Serializable {
             ", gender='" + getGender() + "'" +
             ", insert='" + getInsert() + "'" +
             ", afid='" + getAfid() + "'" +
+            ", path='" + getPath() + "'" +
             "}";
     }
 }

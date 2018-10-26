@@ -10,21 +10,15 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
-import org.springframework.messaging.simp.annotation.SubscribeMapping;
-import org.springframework.messaging.simp.stomp.StompSession;
-import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
 import org.springframework.stereotype.Service;
-import org.springframework.web.socket.client.WebSocketClient;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
-import org.springframework.web.socket.messaging.WebSocketStompClient;
-import org.springframework.web.socket.sockjs.client.SockJsClient;
 import org.springframework.web.socket.sockjs.client.Transport;
 import org.springframework.web.socket.sockjs.client.WebSocketTransport;
 
-import com.customeranalytics.web.rest.UserJWTController;
-import com.customeranalytics.web.rest.vm.LoginVM;
+import com.customeranalytics.domain.Record;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import Luxand.FSDK;
 
@@ -82,19 +76,29 @@ public class FaceRecognitionService {
 	        return transports;
 	    }
 	 
-	@SubscribeMapping("/user/")
-	public void listen(String message) {
-		System.out.println("message from websocket="+message);
-	}
+	
 	
 	//@Async
-	public void analize(String path) throws MqttPersistenceException, MqttException {
+	public void analize(String path) throws MqttPersistenceException, MqttException, JsonProcessingException {
 		 System.out.println("istek geldi");
 		 Long start = System.currentTimeMillis();
 		 
 		 //simpMessagingTemplate.convertAndSend("/user/admin/exchange/amq.direct/chat.message", path);
 		 MqttMessage mqttMessage = new MqttMessage();
-		 mqttMessage.setPayload(new String(path).getBytes());
+		
+		 
+		 Record record = new Record();
+		 record.setAfid(null);
+		 record.setAge(null);
+		 record.setDevice(null);
+		 record.setGender(null);
+		 record.setStuff(null);
+		 record.setPath(path);
+		 
+		 ObjectMapper objectMapper = new ObjectMapper();
+		 String message = objectMapper.writeValueAsString(record);
+		 
+		 mqttMessage.setPayload(new String(message).getBytes());
 		 mqttService.publish(mqttMessage);
 		 
 		 
@@ -149,7 +153,8 @@ public class FaceRecognitionService {
 //		 }else {
 //			 System.out.println("file readErrod");
 //		 }
-		 deleteFile(path);
+		
+		 //deleteFile(path);
 	}
 	
 	public void deleteFile(String path) {
