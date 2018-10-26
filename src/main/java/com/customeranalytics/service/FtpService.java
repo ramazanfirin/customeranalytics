@@ -6,6 +6,7 @@ import java.io.IOException;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.guichaguri.minimalftp.FTPServer;
@@ -20,6 +21,11 @@ public class FtpService {
 
 	@PostConstruct
 	public void init() throws IOException {
+		//startFtpServer();
+	}
+	
+	
+	public void startFtpServer() throws IOException {
 		// Uses the current working directory as the root
 		File root = new File(System.getProperty("user.dir"));
 
@@ -31,9 +37,10 @@ public class FtpService {
 
 		// Creates the server with the authenticator
 		FTPServer server = new FTPServer(auth,faceRecognitionService);
-        faceRecognitionService.analize("324234"); 
+      // faceRecognitionService.analize("324234"); 
 		// Start listening synchronously
-		System.out.println("server startted");
+		System.out.println("ftp server startted");
 		server.listenSync(21);
+
 	}
 }

@@ -10,4 +10,7 @@ CMD echo "The application will start in ${JHIPSTER_SLEEP}s..." && \
 
 EXPOSE 8095 5701/udp
 
+#ADD lib/desktop/libfsdk.so /user/lib/libfsdk.so
+#ENV LD_LIBRARY_PATH /user/lib
+
 ADD *.war /app.war

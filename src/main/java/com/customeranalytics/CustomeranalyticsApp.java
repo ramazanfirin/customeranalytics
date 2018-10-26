@@ -1,27 +1,36 @@
 package com.customeranalytics;
 
-import com.customeranalytics.config.ApplicationProperties;
-import com.customeranalytics.config.DefaultProfileUtil;
+import java.io.File;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.util.Arrays;
+import java.util.Collection;
 
-import io.github.jhipster.config.JHipsterConstants;
+import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.actuate.autoconfigure.*;
+import org.springframework.boot.actuate.autoconfigure.MetricFilterAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.MetricRepositoryAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.MetricsDropwizardAutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.Environment;
 
-import javax.annotation.PostConstruct;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.Arrays;
-import java.util.Collection;
+import com.customeranalytics.config.ApplicationProperties;
+import com.customeranalytics.config.DefaultProfileUtil;
+import com.customeranalytics.service.FtpService;
+import com.guichaguri.minimalftp.FTPServer;
+import com.guichaguri.minimalftp.impl.NativeFileSystem;
+import com.guichaguri.minimalftp.impl.NoOpAuthenticator;
+
+import io.github.jhipster.config.JHipsterConstants;
 
 @ComponentScan
 @EnableAutoConfiguration(exclude = {MetricFilterAutoConfiguration.class, MetricRepositoryAutoConfiguration.class, MetricsDropwizardAutoConfiguration.class})
@@ -62,12 +71,14 @@ public class CustomeranalyticsApp {
      * Main method, used to run the application.
      *
      * @param args the command line arguments
-     * @throws UnknownHostException if the local host name could not be resolved into an address
+     * @throws IOException 
      */
-    public static void main(String[] args) throws UnknownHostException {
+    public static void main(String[] args) throws IOException {
         SpringApplication app = new SpringApplication(CustomeranalyticsApp.class);
         DefaultProfileUtil.addDefaultProfile(app);
-        Environment env = app.run(args).getEnvironment();
+        ConfigurableApplicationContext applicationContext= app.run(args);
+        Environment env = applicationContext.getEnvironment();
+        
         String protocol = "http";
         if (env.getProperty("server.ssl.key-store") != null) {
             protocol = "https";
@@ -89,5 +100,13 @@ public class CustomeranalyticsApp {
         log.info("\n----------------------------------------------------------\n\t" +
                 "Config Server: \t{}\n----------------------------------------------------------",
             configServerStatus == null ? "Not found or not setup for this application" : configServerStatus);
+    
+        FtpService ftpService = (FtpService) applicationContext.getBean("ftpService");
+        ftpService.startFtpServer();
+        System.out.println(ftpService);
     }
+    
+    
+    
+   
 }
