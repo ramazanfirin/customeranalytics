@@ -23,7 +23,7 @@ import com.innovatrics.iface.enums.AgeGenderSpeedAccuracyMode;
 import com.innovatrics.iface.enums.FacedetSpeedAccuracyMode;
 import com.innovatrics.iface.enums.Parameter;
 
-@Service
+//@Service
 public class MqttService implements MqttCallback{
 	
 	

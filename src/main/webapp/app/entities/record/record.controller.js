@@ -14,7 +14,8 @@
         vm.deleteAll = deleteAll;
         vm.loadPage = loadPage;
         vm.predicate = pagingParams.predicate;
-        vm.reverse = pagingParams.ascending;
+        //vm.reverse  = pagingParams.ascending;
+        vm.reverse = false;
         vm.transition = transition;
         vm.itemsPerPage = paginationConstants.itemsPerPage;
 

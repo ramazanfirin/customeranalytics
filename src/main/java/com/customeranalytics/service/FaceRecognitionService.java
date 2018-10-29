@@ -4,7 +4,9 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -23,8 +25,10 @@ import org.springframework.web.socket.sockjs.client.Transport;
 import org.springframework.web.socket.sockjs.client.WebSocketTransport;
 
 import com.customeranalytics.domain.Record;
+import com.customeranalytics.domain.Stuff;
 import com.customeranalytics.domain.enumeration.Gender;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.customeranalytics.repository.RecordRepository;
+import com.customeranalytics.repository.StuffRepository;
 import com.innovatrics.iface.Face;
 import com.innovatrics.iface.FaceHandler;
 import com.innovatrics.iface.IFace;
@@ -37,15 +41,24 @@ import com.innovatrics.iface.enums.Parameter;
 public class FaceRecognitionService {
 	
 	@Autowired private SimpMessageSendingOperations simpMessagingTemplate;
-	@Autowired private MqttService mqttService;
+//	@Autowired private MqttService mqttService;
 	
 	IFace iface= null;
 	FaceHandler faceHandler = null;
 	
 	 public int minEyeDistance = 30;
 	    public int maxEyeDistance = 200;
+	    
+	    @Autowired
+		RecordRepository recordRepository;
 	
-	//private final SimpMessageSendingOperations messagingTemplate;
+	    @Autowired
+		StuffRepository stuffRepository;
+
+//	public FaceRecognitionService() {
+//			super();
+//			// TODO Auto-generated constructor stub
+//		}
 
 	@PostConstruct
 	public void init() throws IOException {
@@ -116,7 +129,12 @@ public class FaceRecognitionService {
 		 Long start = System.currentTimeMillis();
 		 
 		BufferedImage image = ImageIO.read(new File(path));
-
+		if(image==null) {
+			System.out.println("no file loaded");
+			return;
+			
+		}
+		
 		 Face[] faces = faceHandler.detectFaces(convertToByteArray(image), minEyeDistance, maxEyeDistance, 3);
 			if(faces.length==0){
 				System.out.println("No Face Detected");
@@ -143,13 +161,29 @@ public class FaceRecognitionService {
 		 record.setGender(gender);
 		 record.setStuff(null);
 		 record.setPath(path);
+		 record.setInsert(Instant.now());
+		 byte[] uploadedAfid = face.createTemplate();
 		 
-		 ObjectMapper objectMapper = new ObjectMapper();
-		 String message = objectMapper.writeValueAsString(record);
 		 
-		 mqttMessage.setPayload(new String(message).getBytes());
-		 mqttService.publish(mqttMessage);
+		 List<Stuff> stuffList = stuffRepository.findAll();
+		 for (Iterator iterator = stuffList.iterator(); iterator.hasNext();) {
+			Stuff stuff = (Stuff) iterator.next();
+			Face faceStuff = faceHandler.detectFaces(stuff.getImage(), 30, 100, 1)[0]; 
+			byte[] stuffAfid = faceStuff.createTemplate();
+			float f = faceHandler.matchTemplate(uploadedAfid, stuffAfid);
+			if(f>0.5) {
+				System.out.println("match value ="+f);
+				record.setStuff(stuff);
+			}
+		}
 		 
+//		 ObjectMapper objectMapper = new ObjectMapper();
+//		 String message = objectMapper.writeValueAsString(record);
+//		 
+//		 mqttMessage.setPayload(new String(message).getBytes());
+//		 mqttService.publish(mqttMessage);
+		 
+		 recordRepository.save(record);
 		 
 //		 HImage imageHandle = new HImage();
 //		
