@@ -1,6 +1,7 @@
 package com.customeranalytics.service;
 
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -8,12 +9,13 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 import javax.imageio.ImageIO;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -29,13 +31,20 @@ import com.customeranalytics.domain.Stuff;
 import com.customeranalytics.domain.enumeration.Gender;
 import com.customeranalytics.repository.RecordRepository;
 import com.customeranalytics.repository.StuffRepository;
+import com.innovatrics.commons.geom.PointF;
+import com.innovatrics.commons.img.RawBGRImage;
+import com.innovatrics.commons.img.RawImage;
 import com.innovatrics.iface.Face;
 import com.innovatrics.iface.FaceHandler;
 import com.innovatrics.iface.IFace;
+import com.innovatrics.iface.IFaceException;
 import com.innovatrics.iface.enums.AgeGenderSpeedAccuracyMode;
 import com.innovatrics.iface.enums.FaceAttributeId;
+import com.innovatrics.iface.enums.FaceCropMethod;
+import com.innovatrics.iface.enums.FaceFeatureId;
 import com.innovatrics.iface.enums.FacedetSpeedAccuracyMode;
 import com.innovatrics.iface.enums.Parameter;
+import com.innovatrics.iface.enums.SegmentationImageType;
 
 @Service
 public class FaceRecognitionService {
@@ -141,26 +150,42 @@ public class FaceRecognitionService {
 				return;
 			}
 			
+		
+		for (int i = 0; i < faces.length; i++) {
+			
 		Face face = faces[0];
 		Float age = face.getAttribute(FaceAttributeId.AGE);
 	    Float genderValue = face.getAttribute(FaceAttributeId.GENDER);
-	    ;
-		
+
+	    String filename;
+		try {
+			PointF[] points =face.getCropRectangle(FaceCropMethod.FULL_FRONTAL_EXTENDED);
+			filename = "/tmp/testimages/"+UUID.randomUUID()+".png";
+			
+			float w = points[1].getX()-points[0].getX(); 
+			float h = points[3].getY()-points[0].getY(); 
+			
+			BufferedImage subImg = image.getSubimage((int) points[0].getX(), (int) points[0].getY(), (int) w, (int) h);
+			ImageIO.write(subImg, "png", new File(filename));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			filename = path;
+		}
+
 	    Gender gender=null ;
 	     if(genderValue<0)
 	    	 gender = Gender.MALE;
 	     else
 	    	 gender = Gender.FEMALE;
 	        
-		 MqttMessage mqttMessage = new MqttMessage();
-		 
 		 Record record = new Record();
 		 //record.setAfid(new String(face.createTemplate()));
 		 record.setAge(age.longValue());
 		 record.setDevice(null);
 		 record.setGender(gender);
 		 record.setStuff(null);
-		 record.setPath(path);
+		 record.setPath(filename);
 		 record.setInsert(Instant.now());
 		 byte[] uploadedAfid = face.createTemplate();
 		 
@@ -184,7 +209,7 @@ public class FaceRecognitionService {
 //		 mqttService.publish(mqttMessage);
 		 
 		 recordRepository.save(record);
-		 
+		} 
 //		 HImage imageHandle = new HImage();
 //		
 //		 if (FSDK.LoadImageFromFileW(imageHandle, path) == FSDK.FSDKE_OK){
@@ -237,7 +262,7 @@ public class FaceRecognitionService {
 //			 System.out.println("file readErrod");
 //		 }
 		
-		 //deleteFile(path);
+		// deleteFile(path);
 	}
 	
 	public void deleteFile(String path) {
