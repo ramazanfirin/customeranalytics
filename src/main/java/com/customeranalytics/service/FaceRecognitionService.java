@@ -48,118 +48,49 @@ import com.innovatrics.iface.enums.SegmentationImageType;
 
 @Service
 public class FaceRecognitionService {
-	
-	@Autowired private SimpMessageSendingOperations simpMessagingTemplate;
-//	@Autowired private MqttService mqttService;
-	
-	IFace iface= null;
-	FaceHandler faceHandler = null;
-	
-	 public int minEyeDistance = 30;
-	    public int maxEyeDistance = 200;
-	    
-	    @Autowired
-		RecordRepository recordRepository;
-	
-	    @Autowired
-		StuffRepository stuffRepository;
 
-//	public FaceRecognitionService() {
-//			super();
-//			// TODO Auto-generated constructor stub
-//		}
 
-	@PostConstruct
-	public void init() throws IOException {
-		
-//		try {
-//            int r = FSDK.ActivateLibrary("FgsONyEWyINCBz0lbgccL7LMjLMsgAbHxwgdNLt0Q1j8UTmTgZyeaeCoXno1HBydmshM4ygfBO+6/qlKhFZAF5BvVaSKx7NaV0fIFPtkRie2h1DMmKIYa15N7qBP/DsclEoom67W6fXIyRo4yBPhemiu53rXVsqfvmMOuiu7KhQ=");
-//            if (r != FSDK.FSDKE_OK){
-//                 System.err.println("sdk initiaize error");
-//                 return;
-//            }
-//		}catch(java.lang.UnsatisfiedLinkError e) {
-//            e.printStackTrace();
-//			System.exit(1);
-//		} 
-//		
-//		 FSDK.Initialize();
-		
-		iface = IFace.getInstance();
-		ClassPathResource cpr = new ClassPathResource("iengine.lic");
-		byte[] bdata = FileCopyUtils.copyToByteArray(cpr.getInputStream());
-		iface.initWithLicence(bdata);
-		
-		faceHandler = new FaceHandler();
-		faceHandler.setParam(Parameter.FACEDET_SPEED_ACCURACY_MODE, FacedetSpeedAccuracyMode.FAST.toString());
-		faceHandler.setParam(Parameter.AGEGENDER_SPEED_ACCURACY_MODE, AgeGenderSpeedAccuracyMode.FAST.toString());
-	
-		
-		
-		
-	}
-	
-//	 public static StompSession prepareSocketConnectionsForTyping(String URL,UserJWTController userJWTController,String username,String password,String subscribeEndpoint) throws InterruptedException {
-//	    	LoginVM loginVM = new LoginVM();
-//	    	loginVM.setUsername(username);
-//	    	loginVM.setPassword(password);
-//	        String tokenAdmin =userJWTController.authorizeGetToken(loginVM);
-//
-//	        
-//	        WebSocketStompClient stompClient = new WebSocketStompClient((WebSocketClient) new SockJsClient(createTransportClient()));
-//	        stompClient.setMessageConverter(new MappingJackson2MessageConverter());
-//
-//	        String url=URL+ "?access_token=" + tokenAdmin;
-//	        StompSession stompSession = stompClient.connect(url, new StompSessionHandlerAdapter() {}).get();
-//	        
-//	        stompSession.subscribe(subscribeEndpoint, new TypingStompFrameHandler(completableFuture));
-//	        
-//	        return stompSession;
-//	    }
-	
-	 public static List<Transport> createTransportClient() {
-	        List<Transport> transports = new ArrayList<>(1);
-	        transports.add(new WebSocketTransport(new StandardWebSocketClient()));
-	        return transports;
-	    }
+	@Autowired
+	RecordService recordService;
+
+	@Autowired
+	StuffRepository stuffRepository;
+
+	@Autowired
+	IFaceSDKService iFaceSDKService;
 	 
-	 private byte[] convertToByteArray(BufferedImage originalImage) throws IOException{
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			ImageIO.write( originalImage, "jpg", baos );
-			baos.flush();
-			byte[] imageInByte = baos.toByteArray();
-			baos.close();
-			return imageInByte;
-		}
 	
-	//@Async
-	public void analize(String path) throws MqttPersistenceException, MqttException, IOException {
-		 System.out.println("istek geldi");
-		 Long start = System.currentTimeMillis();
-		 
+	private BufferedImage loadImage(String path) throws IOException {
 		BufferedImage image = ImageIO.read(new File(path));
 		if(image==null) {
-			System.out.println("no file loaded");
-			return;
-			
+			throw new RuntimeException("no file loaded");
 		}
 		
-		 Face[] faces = faceHandler.detectFaces(convertToByteArray(image), minEyeDistance, maxEyeDistance, 3);
-			if(faces.length==0){
-				System.out.println("No Face Detected");
-				return;
-			}
-			
+		return image;
+	}
+	 
+	private Face[] getFaces(BufferedImage image) throws IFaceException, IOException {
+		Face[] faces = iFaceSDKService.detectFaces(image);
+		if (faces.length == 0) {
+			throw new RuntimeException("no face detected");
+		}
+		return faces;
+	}
+	
+	private Gender getGender(Float genderValue) {
+		Gender gender=null ;
+		if(genderValue<0)
+	    	 gender = Gender.MALE;
+	     else
+	    	 gender = Gender.FEMALE;
 		
-		for (int i = 0; i < faces.length; i++) {
-			
-		Face face = faces[0];
-		Float age = face.getAttribute(FaceAttributeId.AGE);
-	    Float genderValue = face.getAttribute(FaceAttributeId.GENDER);
-
-	    String filename;
+		return gender;
+	}
+	
+	private String recordFaceImage(BufferedImage image,Face face,String path) {
+		String filename;
 		try {
-			PointF[] points =face.getCropRectangle(FaceCropMethod.FULL_FRONTAL_EXTENDED);
+			PointF[] points =iFaceSDKService.getCropRectangle(face);
 			filename = "/tmp/testimages/"+UUID.randomUUID()+".png";
 			
 			float w = points[1].getX()-points[0].getX(); 
@@ -172,44 +103,27 @@ public class FaceRecognitionService {
 			e.printStackTrace();
 			filename = path;
 		}
-
-	    Gender gender=null ;
-	     if(genderValue<0)
-	    	 gender = Gender.MALE;
-	     else
-	    	 gender = Gender.FEMALE;
-	        
-		 Record record = new Record();
-		 //record.setAfid(new String(face.createTemplate()));
-		 record.setAge(age.longValue());
-		 record.setDevice(null);
-		 record.setGender(gender);
-		 record.setStuff(null);
-		 record.setPath(filename);
-		 record.setInsert(Instant.now());
-		 byte[] uploadedAfid = face.createTemplate();
-		 
-		 
-		 List<Stuff> stuffList = stuffRepository.findAll();
-		 for (Iterator iterator = stuffList.iterator(); iterator.hasNext();) {
-			Stuff stuff = (Stuff) iterator.next();
-			Face faceStuff = faceHandler.detectFaces(stuff.getImage(), 30, 100, 1)[0]; 
-			byte[] stuffAfid = faceStuff.createTemplate();
-			float f = faceHandler.matchTemplate(uploadedAfid, stuffAfid);
-			if(f>0.5) {
-				System.out.println("match value ="+f);
-				record.setStuff(stuff);
-			}
-		}
-		 
-//		 ObjectMapper objectMapper = new ObjectMapper();
-//		 String message = objectMapper.writeValueAsString(record);
-//		 
-//		 mqttMessage.setPayload(new String(message).getBytes());
-//		 mqttService.publish(mqttMessage);
-		 
-		 recordRepository.save(record);
+		
+		return filename;
+	}
+	
+	//@Async
+	public void analize(String path) throws MqttPersistenceException, MqttException, IOException {
+	
+		BufferedImage image = loadImage(path);
+		Face[] faces = getFaces(image);
+		
+		for (int i = 0; i < faces.length; i++) {
+			Face face = faces[i];
+			Float age = face.getAttribute(FaceAttributeId.AGE);
+			Float genderValue = face.getAttribute(FaceAttributeId.GENDER);
+			Gender gender  = getGender(genderValue);
+	        String tempPath = recordFaceImage(image, face, path);
+			byte[] afid = face.createTemplate();
+			recordService.save(age, gender, null, tempPath, afid);
 		} 
+
+		
 //		 HImage imageHandle = new HImage();
 //		
 //		 if (FSDK.LoadImageFromFileW(imageHandle, path) == FSDK.FSDKE_OK){

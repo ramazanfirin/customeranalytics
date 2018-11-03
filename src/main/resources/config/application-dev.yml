@@ -170,3 +170,5 @@ jhipster:
 # ===================================================================
 
 application:
+    datasetId: Testdataset
+    tableId: customerrecord
