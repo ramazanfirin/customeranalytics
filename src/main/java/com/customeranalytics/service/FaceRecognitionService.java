@@ -20,6 +20,7 @@ import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
@@ -91,12 +92,29 @@ public class FaceRecognitionService {
 		String filename;
 		try {
 			PointF[] points =iFaceSDKService.getCropRectangle(face);
-			filename = "/tmp/testimages/"+UUID.randomUUID()+".png";
+			filename = "/home/ramazan/testimages/"+UUID.randomUUID()+".png";
 			
 			float w = points[1].getX()-points[0].getX(); 
 			float h = points[3].getY()-points[0].getY(); 
 			
-			BufferedImage subImg = image.getSubimage((int) points[0].getX(), (int) points[0].getY(), (int) w, (int) h);
+			
+			int startx=0,starty=0,width=0,heigth=0;
+			if(points[0].getX()>0)
+				startx = (int) points[0].getX();
+			if(points[0].getY()>0)
+				starty = (int) points[0].getY();
+			if(w>=image.getWidth())
+				width=image.getWidth();
+			else {
+				width = (int)w;
+			}
+			if(h>image.getHeight()) {
+				heigth=image.getHeight();
+			}else {
+				heigth = (int)h;
+			}
+			
+			BufferedImage subImg = image.getSubimage(startx, starty, width, heigth);
 			ImageIO.write(subImg, "png", new File(filename));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -107,7 +125,7 @@ public class FaceRecognitionService {
 		return filename;
 	}
 	
-	//@Async
+	@Async
 	public void analize(String path) throws MqttPersistenceException, MqttException, IOException {
 	
 		BufferedImage image = loadImage(path);

@@ -42,6 +42,7 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
 import org.springframework.context.ApplicationContext;
+import org.springframework.scheduling.annotation.Async;
 
 import com.customeranalytics.service.FaceRecognitionService;
 import com.customeranalytics.service.SpringContext;
@@ -355,6 +356,7 @@ public class FTPConnection implements Closeable {
         }
     }
     
+    @Async
     public void getFileInfo(OutputStream out) {
     	try {
 			if(out instanceof FileOutputStream) {

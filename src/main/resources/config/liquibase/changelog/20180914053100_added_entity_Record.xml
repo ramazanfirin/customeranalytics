@@ -60,6 +60,16 @@
     		</addColumn>
           
            
+    </changeSet>    
+    
+    <changeSet id="20181103053100-1" author="jhipster">
+          
+           <modifyDataType 
+	            columnName="afid"
+	            newDataType="varchar(4000)"
+	            tableName="record"/>
+          
+           
     </changeSet>        
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here, do not remove-->
 </databaseChangeLog>

@@ -56,6 +56,7 @@ public class GoogleCloudService {
 		
 		System.out.println("duration="+ (end-start));
 		
+		
 		if (insertResponse.hasErrors()) {
 			  throw new RuntimeException("bigguqery insert error");
 		}

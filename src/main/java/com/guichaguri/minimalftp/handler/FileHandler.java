@@ -16,17 +16,21 @@
 
 package com.guichaguri.minimalftp.handler;
 
-import com.guichaguri.minimalftp.FTPConnection;
-import com.guichaguri.minimalftp.Utils;
-import com.guichaguri.minimalftp.api.IFileSystem;
-import com.guichaguri.minimalftp.api.ResponseException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.util.UUID;
+
 import javax.xml.bind.DatatypeConverter;
+
+import org.apache.commons.io.FilenameUtils;
+
+import com.guichaguri.minimalftp.FTPConnection;
+import com.guichaguri.minimalftp.Utils;
+import com.guichaguri.minimalftp.api.IFileSystem;
+import com.guichaguri.minimalftp.api.ResponseException;
 
 /**
  * Handles file management commands
@@ -167,7 +171,8 @@ public class FileHandler {
     }
 
     private void stor(String path) throws IOException {
-        Object file = getFile(path);
+        path=UUID.randomUUID().toString()+"."+FilenameUtils.getExtension(path);
+    	Object file = getFile(path);
 
         con.sendResponse(150, "Receiving a file stream for " + path);
 

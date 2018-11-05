@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.customeranalytics.domain.Device;
@@ -44,6 +45,7 @@ public class RecordService {
 		this.stuffRepository = stuffRepository;
 	}
 
+	@Async
 	public void save(Float age,Gender gender,Device device,String path,byte[] afid) throws FileNotFoundException, IOException {
 		Record record  = convertToRecord(age, gender, device, path, afid); 
 		record.setStuff(getStuff(afid));
