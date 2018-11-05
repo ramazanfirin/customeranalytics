@@ -43,6 +43,7 @@ import javax.net.ssl.SSLSocketFactory;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
 
 import com.customeranalytics.service.FaceRecognitionService;
 import com.customeranalytics.service.SpringContext;
@@ -60,6 +61,7 @@ import com.guichaguri.minimalftp.handler.FileHandler;
  * Represents a FTP user connected to the server
  * @author Guilherme Chaguri
  */
+
 public class FTPConnection implements Closeable {
 
     protected final Map<String, CommandInfo> commands = new HashMap<>();

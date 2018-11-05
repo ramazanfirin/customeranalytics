@@ -3,12 +3,17 @@ package com.customeranalytics.service;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -24,8 +29,10 @@ import com.innovatrics.iface.IFace;
 
 @Service
 public class RecordService {
-
-	final RecordRepository recordRepository;
+	
+    private final Logger log = LoggerFactory.getLogger(UserService.class);
+	
+    final RecordRepository recordRepository;
 	
 	public RecordRepository getRecordRepository() {
 		return recordRepository;
@@ -38,6 +45,8 @@ public class RecordService {
 	IFace iface= null;
 	FaceHandler faceHandler = null;
 	
+	List<Record> safeList = Collections.synchronizedList(new ArrayList<Record>());
+	
 	public RecordService(RecordRepository recordRepository,GoogleCloudService googleCloudService,StuffRepository stuffRepository) {
 		super();
 		this.recordRepository = recordRepository;
@@ -49,9 +58,18 @@ public class RecordService {
 	public void save(Float age,Gender gender,Device device,String path,byte[] afid) throws FileNotFoundException, IOException {
 		Record record  = convertToRecord(age, gender, device, path, afid); 
 		record.setStuff(getStuff(afid));
-		
+		//safeList.add(record);
 		recordRepository.save(record);
-		googleCloudService.insertToBigQuery(record);
+		
+//		if(safeList.size()>999) {
+//			List<Record> tempList = safeList.stream()
+//					  .collect(Collectors.toList());
+//			tempList.addAll(safeList);
+//			recordRepository.save(tempList);
+//			googleCloudService.insertToBigQuery(tempList.toArray(new Record[tempList.size()]));
+//			safeList.clear();
+//			log.info("insert tamamlandı."+safeList.size());
+//		}	
 	}
 	
 	private Record convertToRecord(Float age,Gender gender,Device device,String path,byte[] afid) {

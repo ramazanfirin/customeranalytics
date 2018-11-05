@@ -66,19 +66,18 @@ public class GoogleCloudService {
 		
 		List<RowToInsert> result  = new ArrayList<RowToInsert>();
 		for (int i = 0; i < recordlist.length; i++) {
-			Record record = recordlist[i];
 			
 			Map<String, Object> firstRow = new HashMap<>();
 			firstRow.put("uuid", UUID.randomUUID().toString());
-			firstRow.put("age", recordlist[0].getAge());
-			firstRow.put("gender", recordlist[0].getGender().toString());
-			firstRow.put("afid", recordlist[0].getAfid());
+			firstRow.put("age", recordlist[i].getAge());
+			firstRow.put("gender", recordlist[i].getGender().toString());
+			firstRow.put("afid", recordlist[i].getAfid());
 			firstRow.put("company", "test");
 			firstRow.put("branch", "merkez");
 			firstRow.put("device", "Giris Kapisi");
-			firstRow.put("insertdate", recordlist[0].getInsert().getEpochSecond());
-			if(recordlist[0].getStuff()!=null)
-				firstRow.put("stuff", recordlist[0].getStuff().getName()+" "+recordlist[0].getStuff().getSurname());
+			firstRow.put("insertdate", recordlist[i].getInsert().getEpochSecond());
+			if(recordlist[i].getStuff()!=null)
+				firstRow.put("stuff", recordlist[i].getStuff().getName()+" "+recordlist[i].getStuff().getSurname());
 			
 			result.add(RowToInsert.of(firstRow));
 		}
