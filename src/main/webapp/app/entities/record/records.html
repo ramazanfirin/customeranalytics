@@ -41,7 +41,9 @@
                     <td>{{record.age}}</td>
                     <td data-translate="{{'customeranalyticsApp.Gender.' + record.gender}}">{{record.gender}}</td>
                     <td>{{record.insert | date:'medium'}}</td>
-                    <td>{{record.afid}}</td>
+                    <td>
+<!--                     {{record.afid}} -->
+                    </td>
                     <td><img width="100" height="100" ng-src="/api/records/showImage?path={{record.path}}"></td>
                     <td>
                         <a ui-sref="device-detail({id:record.device.id})">{{record.device.id}}</a>

@@ -9,8 +9,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,8 +22,7 @@ import com.customeranalytics.domain.enumeration.Gender;
 import com.customeranalytics.repository.RecordRepository;
 import com.customeranalytics.repository.StuffRepository;
 import com.innovatrics.iface.Face;
-import com.innovatrics.iface.FaceHandler;
-import com.innovatrics.iface.IFace;
+import com.innovatrics.iface.IFaceException;
 
 @Service
 public class RecordService {
@@ -42,16 +39,16 @@ public class RecordService {
 	
 	final StuffRepository stuffRepository;
 	
-	IFace iface= null;
-	FaceHandler faceHandler = null;
+	final IFaceSDKService iFaceSDKService;
 	
 	List<Record> safeList = Collections.synchronizedList(new ArrayList<Record>());
 	
-	public RecordService(RecordRepository recordRepository,GoogleCloudService googleCloudService,StuffRepository stuffRepository) {
+	public RecordService(IFaceSDKService iFaceSDKService,RecordRepository recordRepository,GoogleCloudService googleCloudService,StuffRepository stuffRepository) {
 		super();
 		this.recordRepository = recordRepository;
 		this.googleCloudService = googleCloudService;
 		this.stuffRepository = stuffRepository;
+		this.iFaceSDKService = iFaceSDKService;
 	}
 
 	@Async
@@ -84,12 +81,12 @@ public class RecordService {
 		return record;
 	}
 	
-	public Stuff getStuff(byte[] afid) {
-		HashMap<byte[],Stuff> stuffList = new HashMap<byte[],Stuff>();
+	public Stuff getStuff(byte[] afid) throws IFaceException, IOException {
+		HashMap<byte[],Stuff> stuffList = getStuffList();
 		for (Iterator iterator = stuffList.keySet().iterator(); iterator.hasNext();) {
 			byte[] stuffAfid = (byte[]) iterator.next();
-			float f = faceHandler.matchTemplate(stuffAfid, afid);
-			if(f>0.5) {
+			float f = iFaceSDKService.matchTemplate(stuffAfid, afid);
+			if(f>750) {
 				return stuffList.get(stuffAfid);
 			}
 		}
@@ -97,13 +94,13 @@ public class RecordService {
 		return null;
 	}
 	
-	public Map<byte[],Stuff> getStuffList(){
+	public HashMap<byte[],Stuff> getStuffList() throws IFaceException, IOException{
 		HashMap<byte[],Stuff> result = new HashMap<byte[],Stuff>();
 		
 		List<Stuff> stuffList = stuffRepository.findAll();
 		for (Iterator iterator = stuffList.iterator(); iterator.hasNext();) {
 			Stuff stuff = (Stuff) iterator.next();
-			Face faceStuff = faceHandler.detectFaces(stuff.getImage(), 30, 100, 1)[0]; 
+			Face faceStuff = iFaceSDKService.detectFaces(stuff.getImage())[0]; 
 			byte[] stuffAfid = faceStuff.createTemplate();
 			result.put(stuffAfid, stuff);
 		}

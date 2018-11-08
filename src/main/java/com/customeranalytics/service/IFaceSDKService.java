@@ -48,6 +48,10 @@ public class IFaceSDKService {
 		
 	}
 	
+	public Face[] detectFaces(byte[] array) throws IFaceException, IOException {
+		return faceHandler.detectFaces(array, minEyeDistance, maxEyeDistance, 3);
+		
+	}
 	public PointF[] getCropRectangle(Face face) throws IFaceException, IOException {
 		return face.getCropRectangle(FaceCropMethod.FULL_FRONTAL);
 		
@@ -62,4 +66,7 @@ public class IFaceSDKService {
 		return imageInByte;
 	}
 
+	public float matchTemplate(byte[] faceTemplate1,byte[] faceTemplate2) {
+		return faceHandler.matchTemplate(faceTemplate1, faceTemplate2);
+	}
 }
