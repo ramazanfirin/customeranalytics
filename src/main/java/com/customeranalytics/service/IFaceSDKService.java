@@ -27,7 +27,7 @@ public class IFaceSDKService {
 	IFace iface= null;
 	FaceHandler faceHandler = null;
 	
-	public int minEyeDistance = 30;
+	public int minEyeDistance = 14;
 	public int maxEyeDistance = 200;
 	
 	@PostConstruct

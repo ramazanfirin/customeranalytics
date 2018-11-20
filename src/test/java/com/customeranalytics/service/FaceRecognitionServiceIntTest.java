@@ -34,19 +34,21 @@ public class FaceRecognitionServiceIntTest {
     Record record; 
     
     @Test
-    public void insert() throws FileNotFoundException, IOException, MqttPersistenceException, MqttException {
+    public void insert() throws FileNotFoundException, IOException, MqttPersistenceException, MqttException, InterruptedException {
     	
-    	byte[] bytes = "hello world".getBytes();
-    	 
-    	//Convert byte[] to String
-    	String s = Base64.getEncoder().encodeToString(bytes);
-    	 
-    	System.out.println(s);
-    	
-    	ClassLoader classLoader = getClass().getClassLoader();
-		File file = new File(classLoader.getResource("face.jpeg").getFile());
-    	
-    	faceRecognitionService.analize(file.getAbsolutePath());
+//    	byte[] bytes = "hello world".getBytes();
+//    	 
+//    	//Convert byte[] to String
+//    	String s = Base64.getEncoder().encodeToString(bytes);
+//    	 
+//    	System.out.println(s);
+//    	
+//    	ClassLoader classLoader = getClass().getClassLoader();
+//		File file = new File(classLoader.getResource("face.jpeg").getFile());
+//    	
+    	String path = "/home/ramazan/Desktop/90900fc7-ef04-40f2-a33e-1f2d28f98944.jpg";
+    	faceRecognitionService.analize(path);
+    	Thread.sleep(20000);
     } 
 
 }

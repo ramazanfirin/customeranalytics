@@ -1,51 +1,29 @@
 package com.customeranalytics.service;
 
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.time.Instant;
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
-import javax.annotation.PostConstruct;
 import javax.imageio.ImageIO;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.util.FileCopyUtils;
-import org.springframework.web.socket.client.standard.StandardWebSocketClient;
-import org.springframework.web.socket.sockjs.client.Transport;
-import org.springframework.web.socket.sockjs.client.WebSocketTransport;
 
-import com.customeranalytics.domain.Record;
-import com.customeranalytics.domain.Stuff;
 import com.customeranalytics.domain.enumeration.Gender;
-import com.customeranalytics.repository.RecordRepository;
 import com.customeranalytics.repository.StuffRepository;
+import com.customeranalytics.service.dto.AfidDto;
 import com.innovatrics.commons.geom.PointF;
-import com.innovatrics.commons.img.RawBGRImage;
-import com.innovatrics.commons.img.RawImage;
 import com.innovatrics.iface.Face;
-import com.innovatrics.iface.FaceHandler;
-import com.innovatrics.iface.IFace;
 import com.innovatrics.iface.IFaceException;
-import com.innovatrics.iface.enums.AgeGenderSpeedAccuracyMode;
 import com.innovatrics.iface.enums.FaceAttributeId;
-import com.innovatrics.iface.enums.FaceCropMethod;
-import com.innovatrics.iface.enums.FaceFeatureId;
-import com.innovatrics.iface.enums.FacedetSpeedAccuracyMode;
-import com.innovatrics.iface.enums.Parameter;
-import com.innovatrics.iface.enums.SegmentationImageType;
 
 @Service
 public class FaceRecognitionService {
@@ -60,6 +38,7 @@ public class FaceRecognitionService {
 	@Autowired
 	IFaceSDKService iFaceSDKService;
 	 
+	final BlockingQueue<AfidDto> linkedBlockingQueue = new LinkedBlockingQueue<AfidDto>(20);
 	
 	private BufferedImage loadImage(String path) throws IOException {
 		BufferedImage image = ImageIO.read(new File(path));
@@ -125,8 +104,27 @@ public class FaceRecognitionService {
 		return filename;
 	}
 	
-	@Async
-	public void analize(String path) throws MqttPersistenceException, MqttException, IOException {
+	public Boolean checkOldRecord(byte[] currentAfid) throws InterruptedException {
+		for (Iterator iterator = linkedBlockingQueue.iterator(); iterator.hasNext();) {
+			AfidDto afidDto = (AfidDto) iterator.next();
+			
+			if(iFaceSDKService.matchTemplate(afidDto.getAfid(), currentAfid)> 750) {
+				Date currentDate = new Date();
+				if(currentDate.getTime()-afidDto.getDate().getTime()<60000) {
+					System.out.println("afid detected but not expired");
+					return false;
+				}
+			}
+		}
+		if(linkedBlockingQueue.size()>20)
+			linkedBlockingQueue.take();
+		
+		linkedBlockingQueue.put(new AfidDto(currentAfid, new Date()));
+		return true;
+	}
+	
+	//@Async
+	public void analize(String path) throws MqttPersistenceException, MqttException, IOException, InterruptedException {
 	
 		BufferedImage image = loadImage(path);
 		Face[] faces = getFaces(image);
@@ -138,7 +136,8 @@ public class FaceRecognitionService {
 			Gender gender  = getGender(genderValue);
 	        String tempPath = recordFaceImage(image, face, path);
 			byte[] afid = face.createTemplate();
-			recordService.save(age, gender, null, tempPath, afid);
+			if(checkOldRecord(afid))
+				recordService.save(age, gender, null, tempPath, afid);
 		} 
 
 		

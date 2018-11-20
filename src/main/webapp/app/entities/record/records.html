@@ -44,7 +44,11 @@
                     <td>
 <!--                     {{record.afid}} -->
                     </td>
-                    <td><img width="100" height="100" ng-src="/api/records/showImage?path={{record.path}}"></td>
+                    <td>
+                    <img width="100" height="100" ng-src="/api/records/showImage?path={{record.path}}">
+                    <label>{{record.path}}</label>
+                    
+                    </td>
                     <td>
                         <a ui-sref="device-detail({id:record.device.id})">{{record.device.id}}</a>
                     </td>
