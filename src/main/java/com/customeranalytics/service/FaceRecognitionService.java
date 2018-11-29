@@ -136,7 +136,7 @@ public class FaceRecognitionService {
 			Gender gender  = getGender(genderValue);
 	        String tempPath = recordFaceImage(image, face, path);
 			byte[] afid = face.createTemplate();
-			if(checkOldRecord(afid))
+			//if(checkOldRecord(afid))
 				recordService.save(age, gender, null, tempPath, afid);
 		} 
 

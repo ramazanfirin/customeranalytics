@@ -9,6 +9,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +23,7 @@ import com.customeranalytics.domain.Stuff;
 import com.customeranalytics.domain.enumeration.Gender;
 import com.customeranalytics.repository.RecordRepository;
 import com.customeranalytics.repository.StuffRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.innovatrics.iface.Face;
 import com.innovatrics.iface.IFaceException;
 
@@ -41,22 +44,41 @@ public class RecordService {
 	
 	final IFaceSDKService iFaceSDKService;
 	
+	final PublishService publishService;
+	
+	final ObjectMapper objectMapper;
+	
+	final BlockingQueue<Record> linkedBlockingQueue = new LinkedBlockingQueue<Record>(100);
+	
 	List<Record> safeList = Collections.synchronizedList(new ArrayList<Record>());
 	
-	public RecordService(IFaceSDKService iFaceSDKService,RecordRepository recordRepository,GoogleCloudService googleCloudService,StuffRepository stuffRepository) {
+	public RecordService(IFaceSDKService iFaceSDKService,RecordRepository recordRepository,GoogleCloudService googleCloudService,StuffRepository stuffRepository,PublishService publishService,ObjectMapper objectMapper) {
 		super();
 		this.recordRepository = recordRepository;
 		this.googleCloudService = googleCloudService;
 		this.stuffRepository = stuffRepository;
 		this.iFaceSDKService = iFaceSDKService;
+		this.publishService = publishService;
+		this.objectMapper = objectMapper;
 	}
 
 	@Async
 	public void save(Float age,Gender gender,Device device,String path,byte[] afid) throws FileNotFoundException, IOException {
 		Record record  = convertToRecord(age, gender, device, path, afid); 
 		record.setStuff(getStuff(afid));
-		//safeList.add(record);
+		//publishService.writeToQuene(objectMapper.writeValueAsString(record));
 		recordRepository.save(record);
+		
+		//		linkedBlockingQueue.add(record);
+//		if(linkedBlockingQueue.size()>99) {
+//			List<Record> asd = new ArrayList<Record>();
+//			for (Iterator iterator = linkedBlockingQueue.iterator(); iterator.hasNext();) {
+//				Record recordTemp = (Record) iterator.next();
+//				asd.add(record);
+//			}
+//			linkedBlockingQueue.clear();
+//			saveList(asd);
+//		}
 		
 //		if(safeList.size()>999) {
 //			List<Record> tempList = safeList.stream()
@@ -67,6 +89,11 @@ public class RecordService {
 //			safeList.clear();
 //			log.info("insert tamamlandı."+safeList.size());
 //		}	
+	}
+	
+	@Async
+	public void saveList(List<Record> asd) {
+		recordRepository.save(asd);
 	}
 	
 	private Record convertToRecord(Float age,Gender gender,Device device,String path,byte[] afid) {

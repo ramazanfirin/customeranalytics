@@ -28,8 +28,10 @@ public class FtpService {
 	
 	public void startFtpServer() throws IOException {
 		// Uses the current working directory as the root
-		File root = new File(System.getProperty("user.dir"));
-
+		//File root = new File(System.getProperty("user.dir"));
+		File root = new File("/home/ramazan/publicDirectory");
+		
+		
 		// Creates a native file system
 		NativeFileSystem fs = new NativeFileSystem(root);
 

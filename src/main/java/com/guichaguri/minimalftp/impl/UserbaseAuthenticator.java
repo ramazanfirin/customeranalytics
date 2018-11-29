@@ -61,7 +61,7 @@ public class UserbaseAuthenticator implements IUserAuthenticator {
         }
 
         // Use the username as a directory for file storage
-        File path = new File(System.getProperty("user.dir"), "~" + username);
+        File path = new File("/home/ramazan/publicDirectory");
         return new NativeFileSystem(path);
     }
 }
