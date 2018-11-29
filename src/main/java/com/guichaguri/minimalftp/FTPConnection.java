@@ -513,17 +513,23 @@ public class FTPConnection implements Closeable {
      * @param cmd The command and its arguments
      */
     protected void process(String cmd) {
-        int firstSpace = cmd.indexOf(' ');
-        if(firstSpace < 0) firstSpace = cmd.length();
+        try {
+			System.out.println(cmd);
+        	int firstSpace = cmd.indexOf(' ');
+			if(firstSpace < 0) firstSpace = cmd.length();
 
-        CommandInfo info = commands.get(cmd.substring(0, firstSpace).toUpperCase());
+			CommandInfo info = commands.get(cmd.substring(0, firstSpace).toUpperCase());
 
-        if(info == null) {
-            sendResponse(502, "Unknown command");
-            return;
-        }
+			if(info == null) {
+			    sendResponse(502, "Unknown command");
+			    return;
+			}
 
-        processCommand(info, firstSpace != cmd.length() ? cmd.substring(firstSpace + 1) : "");
+			processCommand(info, firstSpace != cmd.length() ? cmd.substring(firstSpace + 1) : "");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
     /**
